@@ -1,3 +1,6 @@
+#  Josh Bloom
+# note: libraries api has rate limit of 60 requests / minute, so add a pause if more than 60 pages.
+
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
