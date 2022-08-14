@@ -1,5 +1,5 @@
 #  Josh Bloom
-# note: libraries api has rate limit of 60 requests / minute, so add a pause if more than 60 pages.
+# note: libraries.io api has rate limit of 60 requests / minute, so add a pause if more than 60 pages.
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,7 +13,7 @@ con = sqlite3.connect('npm_packages.db')  # TABLE packages  ->  date text, name 
 
 def retrieve_page(page):
     request_parameters = {
-        'page': str(page),
+        'page': page,
         'per_page': "100",
         'order': 'desc',
         'platforms': 'NPM',
@@ -22,7 +22,7 @@ def retrieve_page(page):
     resp = requests.get("https://libraries.io/search", params=request_parameters)
     if not done:
         print("URL is ", resp.url)
-        write_to_file(resp.text)
+        insert_new(resp.text)
 
 
 def in_db(package: [], cursor: con.cursor()) -> bool:
@@ -36,7 +36,7 @@ def in_db(package: [], cursor: con.cursor()) -> bool:
     return False
 
 
-def write_to_file(response):
+def insert_new(response):
     soup = BeautifulSoup(response, 'html.parser')
     cur = con.cursor()
     for package in soup.find_all('div', 'project'):
@@ -49,7 +49,6 @@ def write_to_file(response):
         if not in_db([date, name, version], cur):
             #  print("Inserting ", name)
             cur.execute('INSERT INTO packages VALUES(?,?,?)', (date, name, version))
-
     con.commit()
 
 
