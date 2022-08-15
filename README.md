@@ -1,2 +1,2 @@
 # NPMspy
-Observer new NPM packages, looking for suspicious code.
+Observe new NPM packages, looking for suspicious code.
