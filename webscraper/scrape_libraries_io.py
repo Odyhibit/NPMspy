@@ -1,5 +1,5 @@
 #  Josh Bloom
-# note: libraries.io api has rate limit time.sleep added to avoid that
+# note: libraries.io api has rate limit(429) time.sleep added to avoid that
 
 import time
 import requests
@@ -41,7 +41,7 @@ def insert_new(response, connection):
     soup = BeautifulSoup(response, 'html.parser')
     con = connection
     cur = con.cursor()
-    count = 0
+    new, updated = 0, 0
     for package in soup.find_all('div', 'project'):
         name = package.find('a').get('href')
         date = package.find('time').get('datetime')
@@ -49,11 +49,15 @@ def insert_new(response, connection):
         version_start = 21  # manually counted
         version_end = version_text.find('-')
         version = version_text[version_start:version_end]
-        if not in_db([date, name, version], cur):
+        found = in_db([date, name, version], cur)
+        if not found:
             cur.execute('INSERT INTO packages VALUES(?,?,?)', (date, name, version))
-            count += 1
-    print("  * ", count, "new packages")
-    if count is 0:
+            new += 1
+        if found:
+            cur.execute('UPDATE packages SET date = ?, version = ? WHERE name = ?', (date, version, name))
+            updated += 1
+    print("  * ", new, "new, ", updated, "updated packages")
+    if new == 0:
         done = True
     con.commit()
 
