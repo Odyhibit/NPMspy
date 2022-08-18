@@ -30,33 +30,37 @@ def retrieve_page(page, connection):
 
 def in_db(package: [], cursor: sqlite3.connect) -> bool:
     global done
-    cursor.execute('SELECT count(date) FROM packages WHERE date = ? AND name = ? AND version = ?', package)
+    cursor.execute('SELECT count(date) FROM packages WHERE  name = ? ', (package[1],))
     found = cursor.fetchone()
     if found[0] > 0:
         return True
     return False
 
 
-def insert_new(response, connection):
+def scrape_version(input_string: str) -> str:
+    start = 21  # manually counted
+    end = input_string.find('-')
+    return input_string[start:end]
+
+
+def insert_new(response: requests.Response, connection: sqlite3.Connection):
     global done
     soup = BeautifulSoup(response, 'html.parser')
     cur = connection.cursor()
-    new, updated = 0, 0
+    new, existing = 0, 0
     for package in soup.find_all('div', 'project'):
         name = package.find('a').get('href')[5:]
         date = package.find('time').get('datetime')
-        version_text = package.find('small').getText()
-        version_start = 21  # manually counted
-        version_end = version_text.find('-')
-        version = version_text[version_start:version_end]
+        version = scrape_version(package.find('small').getText())
+
         found = in_db([date, name, version], cur)
         if not found:
             cur.execute('INSERT INTO packages VALUES(?,?,?)', (date, name, version))
             new += 1
         if found:
             cur.execute('UPDATE packages SET date = ?, version = ? WHERE name = ?', (date, version, name))
-            updated += 1
-    print("  * ", new, "new, ", updated, "updated packages")
+            existing += 1
+    print("  * ", new, "new, ", existing, "existing packages")
     if new == 0:
         done = True
     connection.commit()
@@ -68,8 +72,9 @@ con_db = sqlite3.connect('npm_packages.db')  # TABLE packages  ->  date text, na
 
 for i in range(1, 101):  # any page past 100 gives a 404
     if not done:
-        if i % 9 == 0:  # rate limit seems to kick in after 10 pages
-            time.sleep(20)
+        if i % 10 == 0:  # rate limit seems to kick in after 10 pages
+            print("Pausing 40 seconds to prevent rate limit.")
+            time.sleep(40)
         retrieve_page(i, con_db)
 
 con_db.close()
