@@ -43,7 +43,7 @@ def scrape_version(input_string: str) -> str:
     return input_string[start:end]
 
 
-def insert_new(response: requests.Response, connection: sqlite3.Connection):
+def insert_new(response: str, connection: sqlite3.Connection):
     global done
     soup = BeautifulSoup(response, 'html.parser')
     cur = connection.cursor()
