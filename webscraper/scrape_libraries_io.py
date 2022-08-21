@@ -39,8 +39,8 @@ def in_db(package: [], cursor: sqlite3.connect) -> bool:
 
 def scrape_version(input_string: str) -> str:
     start = 21  # manually counted
-    end = input_string.find('-')
-    return input_string[start:end]
+    end = input_string.find(' -')
+    return input_string[start:end].strip()
 
 
 def insert_new(response: str, connection: sqlite3.Connection):
@@ -49,18 +49,19 @@ def insert_new(response: str, connection: sqlite3.Connection):
     cur = connection.cursor()
     new, existing = 0, 0
     for package in soup.find_all('div', 'project'):
-        name = package.find('a').get('href')[5:]
+        name_ref = package.find('a').get('href')[5:]
+        name = str(name_ref).replace("%2F", "/")
         date = package.find('time').get('datetime')
         version = scrape_version(package.find('small').getText())
-
         found = in_db([date, name, version], cur)
         if not found:
             cur.execute('INSERT INTO packages VALUES(?,?,?)', (date, name, version))
             new += 1
         if found:
+
             cur.execute('UPDATE packages SET date = ?, version = ? WHERE name = ?', (date, version, name))
             existing += 1
-    print("  * ", new, "new, ", existing, "existing packages")
+    print("  ", new, "new, ", existing, "existing packages")
     if new == 0:
         done = True
     connection.commit()
