@@ -5,32 +5,27 @@
 import sqlite3
 import subprocess
 
-import requests
-import yara
-import gzip
 
-
-def get_filename(name: str, version: str) -> str:
+def remove_scope(name: str) -> str:
     if "/" in name:
-        name = name[name.find("/") + 1:]   # remove scope
-    return name.strip() + "-" + version.strip() + ".tgz"
+        name = name[name.find("/") + 1:]
+    return name
 
 
-def get_download_url(name: str, version: str) -> str:
-    return "https://registry.npmjs.org/" + name + "/-/" + get_filename(name, version)
-
-
-def extract_gzip(zip_file):
-    zip_file = gzip.open(zip_file)
-    return {name: zip_file.read(name) for name in zip_file.namelist()}
-
-conn_npm = sqlite3.connect("../webscraper/npm_packages.db")  # TABLE packages  ->  date text, name text,  version real
+#  connect to DB
+conn_npm = sqlite3.connect("../webscraper/npm_packages.db")
 cur_npm = conn_npm.cursor()
+
+#  get ten most recent packages (date,name,version)
 ten_most_recent = cur_npm.execute("SELECT * from packages ORDER BY date DESC LIMIT 10").fetchall()
+
+#  download them with npm
 for package in ten_most_recent:  # package date,name,version
-    package_url = get_download_url(package[1].replace("%2F", "/"), package[2])
-    file_response = requests.get(package_url)
-    print(package_url)
-    print(file_response.apparent_encoding)
-    print("about to nmp pack", package[1])
-    test_download = subprocess.run(["npm", "pack", str(package[1])])
+    package_name = "pkg:npm/" + remove_scope(package[1])
+    package_dir = "package_downloads/" + remove_scope(package[1])
+    oss_download = subprocess.run(["oss-download", "-e", "-c", "-x", package_dir, package_name], capture_output=True)
+    yara_response = subprocess.run(["yara64", "-r", "-m", "./yara_rules/rules.yara", package_dir], capture_output=True, text=True)
+    if yara_response.stdout != "":
+        # process moving the directory to proper folder.
+        print(yara_response.stdout)
+    #  print("**** ", package_dir, yara_response.stdout)
