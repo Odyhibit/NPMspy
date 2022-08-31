@@ -1,6 +1,7 @@
-rule download_then_execute {
+rule stage_two_downloader {
     meta:
-        description = "download then make a file executable "
+        description = "download then make executable "
+        directory = "malware_stage2_downloader"
         author = "Josh Bloom"
 
     strings:
