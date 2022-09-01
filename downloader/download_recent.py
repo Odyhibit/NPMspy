@@ -26,6 +26,8 @@ conn_npm = sqlite3.connect("../webscraper/npm_packages.db")
 cur_npm = conn_npm.cursor()
 
 #  get ten most recent packages (date,name,version)
+#  should use second table for results and pull the packages by date with no results
+# SELECT packages.name FROM packages LEFT JOIN results ON results.name = packages.name WHERE results.name IS NULL
 ten_most_recent = cur_npm.execute("SELECT * from packages ORDER BY date DESC LIMIT 10").fetchall()
 
 #  download them with npm
