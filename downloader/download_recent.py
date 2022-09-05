@@ -42,17 +42,17 @@ def download_package(name: str) -> ():
 
 
 def yara_rule(directory: str) -> str:
-    #  yara64 -r -m ./yara_rules/rules.yara ./package_downloads/<package_folder>
+    #  yara64 -r ./yara_rules/rules.yara ./package_downloads/<package_folder>
     # print()
     # print("yara64", "-r", "yara_rules/rules.yara", directory)
-    yara_response = subprocess.run(["yara64", "-r", "yara_rules/rules.yara", directory], capture_output=True,
+    yara_response = subprocess.run(["yara64", "-r", "./yara_rules/rules.yara", directory], capture_output=True,
                                    encoding="UTF-8")
     return yara_response.stdout
 
 
 #  test yara
 print("testing yara rule")
-print(yara_rule("package_downloads\\codashop-5.6.0").split(" ")[1])
+print(yara_rule("package_downloads\\codashop-5.6.0").split(" ")[0])
 #  connect to DB
 conn_npm = sqlite3.connect("../webscraper/npm_packages.db")
 cur_npm = conn_npm.cursor()
