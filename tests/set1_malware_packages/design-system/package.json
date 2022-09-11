@@ -1,0 +1,60 @@
+{
+  "name": "@sky-mavis/design-system",
+  "version": "2.1.14",
+  "description": "Core styles & components",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "icons"
+  ],
+  "typings": "dist/index.d.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "@svgr/cli": "^5.5.0",
+    "@types/node": "^16.7.8",
+    "@types/react": "^17.0.19",
+    "@types/react-dom": "^17.0.5",
+    "@types/react-onclickoutside": "^6.7.3",
+    "@types/react-transition-group": "^4.4.0",
+    "autoprefixer": "^10.2.5",
+    "postcss": "^8.2.15",
+    "postcss-cli": "^8.3.1",
+    "postcss-each": "^0.10.0",
+    "postcss-import": "^12.0.1",
+    "postcss-nested": "^4.2.1",
+    "tailwindcss": "^2.1.2",
+    "typescript": "^3.9.3"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "scripts": {
+    "build:style": "postcss src/styles/index.css --output dist/index.css --config config",
+    "build:icons": "tsc -p config/tsconfig-icons.json",
+    "build:component": "tsc -p config/tsconfig.json",
+    "build": "yarn build:style && yarn build:icons && yarn build:component",
+    "dev": "yarn build:style --watch | yarn build:component --watch",
+    "clean": "rm -rf ./dist ./icons",
+    "transform:svg": "npx @svgr/cli src/icons/svgs -d src/icons/ --config-file config/svgr.config.js && rm -rf src/icons/index.tsx",
+    "prepublish": "yarn clean && yarn build",
+    "preinstall": "node dist/utils/render.js"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.4.2",
+    "classnames": "^2.3.1",
+    "focus-visible": "^5.1.0",
+    "react-onclickoutside": "^6.9.0",
+    "react-popper": "^2.2.3",
+    "react-transition-group": "^4.4.1"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/sky-mavis/design-system/issues"
+  },
+  "homepage": "https://github.com/sky-mavis/design-system#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sky-mavis/design-system.git"
+  }
+}

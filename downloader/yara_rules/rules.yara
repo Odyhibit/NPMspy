@@ -1,2 +1,5 @@
 include "./obfuscation.yara"
 include "./stage_two_downloader.yara"
+include "./dns_exfil.yara"
+include "./info_stealer.yara"
+include "./reverse_shell.yara"

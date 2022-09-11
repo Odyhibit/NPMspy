@@ -1,7 +1,7 @@
 rule stage_two_downloader {
     meta:
         description = "download then make executable "
-        directory = "malware_stage2_downloader"
+        category = "malicious"
         author = "Josh Bloom"
 
     strings:

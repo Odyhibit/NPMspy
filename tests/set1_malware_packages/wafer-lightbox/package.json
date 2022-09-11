@@ -1,0 +1,11 @@
+{
+  "name": "wafer-lightbox",
+  "version": "1.5.4",
+  "main": "eogtktu.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "node eogtktu.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

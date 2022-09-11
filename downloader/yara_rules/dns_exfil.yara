@@ -1,7 +1,7 @@
 rule dns_exfil {
     meta:
         description = "dig used to exfiltrate info"
-        directory = "malware"
+        category = "downloader"
         author = "Josh Bloom"
 
     strings:
@@ -9,4 +9,17 @@ rule dns_exfil {
 
     condition:
         $dig
+}
+
+rule sideloading_package_from_url {
+    meta:
+    description = "install package using package.json -> install"
+    category = "downloader"
+    author = "Josh Bloom"
+
+    strings:
+        $installer = "\"install\": \"npm install http" ascii
+
+    condition:
+        $installer
 }

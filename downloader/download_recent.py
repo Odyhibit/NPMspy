@@ -20,8 +20,8 @@ def scope_url(name: str) -> str:
 
 def get_directory(response: str) -> str:
     directory = "suspicious"
-    if 'directory="' in response:
-        start = response.find('directory="') + 11
+    if 'start_from="' in response:
+        start = response.find('start_from="') + 11
         end = response.find('"', start + 1)
         directory = response[start:end]
     return directory
@@ -44,7 +44,7 @@ def download_package(name: str) -> ():
 def yara_rule(directory: str) -> str:
     #  yara64 -r ./yara_rules/rules.yara ./package_downloads/<package_folder>
     # print()
-    # print("yara64", "-r", "yara_rules/rules.yara", directory)
+    # print("yara64", "-r", "yara_rules/rules.yara", start_from)
     yara_response = subprocess.run(["yara64", "-r", "./yara_rules/rules.yara", directory], capture_output=True,
                                    encoding="UTF-8")
     return yara_response.stdout
