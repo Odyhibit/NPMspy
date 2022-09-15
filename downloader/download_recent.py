@@ -54,37 +54,45 @@ def download_package(name: str) -> ():
 
 def yara_rule(directory: str) -> str:
     #  yara64 -r ./yara_rules/rules.yara ./package_downloads/<package_folder>
-    # print()
     # print("yara64", "-r", "yara_rules/rules.yara", start_from)
     yara_response = subprocess.run(["yara64", "-r", "./yara_rules/rules.yara", directory], capture_output=True,
                                    encoding="UTF-8")
     return yara_response.stdout
 
 
+def add_result(cursor: sqlite3.Connection.cursor, package_id: int, yara_id: int):
+    cursor.execute("INSERT INTO results (package_id,match_id) values (?,?)", (package_id, yara_id))
 
-#  connect to DB
-conn_npm = sqlite3.connect("../webscraper/npm_packages.db")
-cur_npm = conn_npm.cursor()
-#  get most recent packages (date,name,version)
-most_recent = cur_npm.execute("SELECT date,name,version,npm_packages.id from npm_packages "
+
+if __name__ == "__main__":
+    #   hard coded yara results
+    not_downloaded = 1
+    no_matches = 2
+
+    conn_npm = sqlite3.connect("../webscraper/npm_packages.db")
+    cur_npm = conn_npm.cursor()
+    most_recent = cur_npm.execute("SELECT date,name,version,npm_packages.id from npm_packages "
                                   "LEFT JOIN results ON results.package_id = npm_packages.id "
                                   "WHERE results.id IS NULL ORDER BY date DESC LIMIT 1000").fetchall()
 
-for package in most_recent:  # package date,name,version
-    download_dir = download_package(package[1])
-    if len(download_dir) > 4:  # download worked
-        yara_matches = yara_rule(download_dir)
-        gutter = " " * (75 - len(download_dir))
-        if yara_matches == "":
-            cur_npm.execute("INSERT INTO results (package_id,match_id) values (?,?)", (package[3], 2))
-            print(download_dir, gutter, in_green("no matches"))
-        else:
-            yara_match_id = rule_id(yara_matches.split()[0], conn_npm)
-            cur_npm.execute("INSERT INTO results (package_id,match_id) values (?,?)", (package[3], yara_match_id))
-            print(download_dir, gutter, in_red(yara_matches))
-    else:  # download did not work
-        cur_npm.execute("INSERT INTO results (package_id,match_id) values (?,?)", (package[3], 1))
-        gutter = " " * (75 - len(package[1]))
-        print(package[1], gutter, in_red("not downloaded"))
-        
-    conn_npm.commit()
+    for package in most_recent:
+        name = package[1]
+        package_id = package[3]
+        download_dir = download_package(name)
+
+        if len(download_dir) > 4:  # download worked
+            yara_matches = yara_rule(download_dir)
+            gutter = " " * (75 - len(download_dir))
+            if yara_matches == "":
+                add_result(cur_npm, package_id, no_matches)
+                print(download_dir, gutter, in_green("no matches"))
+            else:
+                yara_match_id = rule_id(yara_matches.split()[0], conn_npm)
+                add_result(cur_npm, package_id, yara_match_id)
+                print(download_dir, gutter, in_red(yara_matches))
+        else:  # download did not work
+            add_result(cur_npm, package_id, not_downloaded)
+            gutter = " " * (75 - len(name))
+            print(package[1], gutter, in_red("not downloaded"))
+
+        conn_npm.commit()
