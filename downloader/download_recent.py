@@ -27,6 +27,17 @@ def get_directory(response: str) -> str:
     return directory
 
 
+def rule_id(rule_name: str, connection: sqlite3.connect) -> int:
+    cursor = connection.cursor()
+    cursor.execute('SELECT id FROM yara_matches WHERE  rule_name = ? ', (rule_name,))
+    found = cursor.fetchone()
+    print(type(found))
+    if found is not None:
+        return int(found[0])
+    cursor.execute('INSERT INTO yara_matches(rule_name) VALUES(?)', (rule_name,))
+    return cursor.lastrowid
+
+
 def download_package(name: str) -> ():
     directory = ""
     package_name = "pkg:npm/" + scope_url(name)
@@ -50,9 +61,7 @@ def yara_rule(directory: str) -> str:
     return yara_response.stdout
 
 
-#  test yara
-print("testing yara rule")
-print(yara_rule("package_downloads\\codashop-5.6.0").split(" ")[0])
+
 #  connect to DB
 conn_npm = sqlite3.connect("../webscraper/npm_packages.db")
 cur_npm = conn_npm.cursor()
@@ -61,20 +70,21 @@ most_recent = cur_npm.execute("SELECT date,name,version,npm_packages.id from npm
                                   "LEFT JOIN results ON results.package_id = npm_packages.id "
                                   "WHERE results.id IS NULL ORDER BY date DESC LIMIT 1000").fetchall()
 
-#  download them with npm
 for package in most_recent:  # package date,name,version
     download_dir = download_package(package[1])
-    if len(download_dir) > 4:
+    if len(download_dir) > 4:  # download worked
         yara_matches = yara_rule(download_dir)
         gutter = " " * (75 - len(download_dir))
         if yara_matches == "":
             cur_npm.execute("INSERT INTO results (package_id,match_id) values (?,?)", (package[3], 2))
             print(download_dir, gutter, in_green("no matches"))
         else:
-
+            yara_match_id = rule_id(yara_matches.split()[0], conn_npm)
+            cur_npm.execute("INSERT INTO results (package_id,match_id) values (?,?)", (package[3], yara_match_id))
             print(download_dir, gutter, in_red(yara_matches))
-    else:
+    else:  # download did not work
         cur_npm.execute("INSERT INTO results (package_id,match_id) values (?,?)", (package[3], 1))
         gutter = " " * (75 - len(package[1]))
         print(package[1], gutter, in_red("not downloaded"))
+        
     conn_npm.commit()

@@ -2,5 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/downloader/package_downloads/@teams-max/create-teams-app/npm-%40teams-max%2fcreate-teams-app@2.0.0/npm-%40teams-max%2fcreate-teams-app@2.0/package/templates/react-app" vcs="Git" />
   </component>
 </project>
