@@ -18,4 +18,5 @@ downloader/download_recent.py
   * save results in database
 
 ### Database layout
-![DBMS ER diagram (UML notation) (1)](https://user-images.githubusercontent.com/1384102/190476962-4d33e7c2-9358-4af8-ab1b-024f350a96b9.jpeg)
+
+![DBMS ER diagram (UML notation)](https://user-images.githubusercontent.com/1384102/190485522-ef4915be-c511-47e2-ac08-eb82f1d0a0ae.jpeg)
