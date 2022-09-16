@@ -2,17 +2,17 @@
 Observe new NPM packages, looking for suspicious code.
 
 ## Requirements:
-yara, or yara64.exe in your path.
-oss-download available in your path.
+ * yara, or yara64.exe in your path.
+ * oss-download available in your path.
 
 ### Webscraper
 webscraper/scrape_libraries_io.py 
   * scrape the most recent package names from Libraries.io 
-  * stored in the same directory in a sqlite database
+  * stored in a sqlite database
 
 ### Downloading/Sanning packages
 downloader/download_recent.py 
-  * get most recent unscanned packages from database
+  * get the most recent unscanned packages from database
   * use oss-download to save the package
   * use yara to scan the package
   * save results in database
