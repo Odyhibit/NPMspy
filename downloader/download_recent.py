@@ -42,7 +42,7 @@ def download_package(name: str) -> ():
     directory = ""
     package_name = "pkg:npm/" + scope_url(name)
     package_dir = "package_downloads\\" + name
-    # print("oss-download", "-e", "-c", "-x", package_dir, package_name)
+    # oss-download -e -c -x <package_dir> <package_name>
     oss_download = subprocess.run(["oss-download", "-e", "-c", "-x", package_dir, package_name], capture_output=True,
                                   encoding="UTF-8")
     index = oss_download.stderr.find(" to ") + 4
