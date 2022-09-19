@@ -1,7 +1,7 @@
 #  Josh Bloom
 import requests
 from bs4 import BeautifulSoup
-from requests_html import HTMLSession
+
 
 def get_filename(url: str, version: str) -> str:
     return url[url.find(version) + len(version):]
@@ -52,7 +52,7 @@ def process_folders_files(page_soup: BeautifulSoup, url: str):
 
 
 def get_new_soup(url: str) -> BeautifulSoup:
-    session = HTMLSession()
+
     r = requests.get(url)
     #  print(r.url)
     return BeautifulSoup(r.text, 'html.parser')
