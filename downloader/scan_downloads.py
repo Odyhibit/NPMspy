@@ -69,6 +69,11 @@ if __name__ == "__main__":
     not_downloaded = 1
     no_matches = 2
 
+    conn_npm = sqlite3.connect("../webscraper/npm_packages.db")
+    cur_npm = conn_npm.cursor()
+    most_recent = cur_npm.execute("SELECT date,name,version,npm_packages.id from npm_packages "
+                                  "LEFT JOIN results ON results.package_id = npm_packages.id "
+                                  "WHERE results.id IS NULL ORDER BY date DESC LIMIT 1000").fetchall()
 
     for package in most_recent:
         name = package[1]
