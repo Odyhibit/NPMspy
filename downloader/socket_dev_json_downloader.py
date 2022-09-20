@@ -1,4 +1,6 @@
 #  Josh Bloom
+import os
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -25,32 +27,36 @@ def get_new_soup(url: str) -> BeautifulSoup:
     return BeautifulSoup(r.text, 'html.parser')
 
 
-def write_file(filename: str, content_url: str):
-    with open("package_downloads/" + filename, "wb") as file_out:
-        content = requests.get(content_url)
-        file_out.write(content.content)
-        print("writing file", "package_downloads/" + filename, "wb")
+def write_file(name: str, url: str):
+    os.makedirs(os.path.dirname(name), exist_ok=True)
+    with open(name, "w+") as file_out:
+        content = requests.get(url)
+        file_out.write(str(content.content))
 
 
-def get_file_list(overview: str) -> str:
+def get_file_list(overview: str) -> list:
     start = overview.find('"items":[') + 9
     end = overview.find("]", start)
-    print("get list", overview[start:end])
-    return overview[start:end]
+    return overview[start:end].split("}")
 
 
 def get_next_item(file_list: str) -> str:
     start = file_list.find("{")
     end = file_list.find("}")
-    print("get item", file_list[start:end])
     return file_list[start:end]
 
 
-def get_filename(item: str) -> str:
-    start = item.find('"file","path":"') + 15
-    end = item.find('"', start)
-    print("get name",start,end, item[start:end])
-    return item[start:end]
+def get_filename(description: str) -> str:
+    start = description.find('"file","path":"') + 15
+    end = description.find('"', start)
+    return description[start:end]
+
+
+def get_content_url(description: str) -> str:
+    start = description.find('"hash":"') + 8
+    end = description.find('"', start)
+    return "https://socketusercontent.com/blob/" + str(description[start:end])
+
 
 package_name = "oaut"
 package_url = "https://socket.dev/npm/package/" + package_name + "/files"
@@ -64,4 +70,12 @@ if len(list_of_versions):
 
 packages_overview = soup.find_all("script")[-1].text
 # print(get_file_list(packages_overview))
-print(get_filename(get_next_item(get_file_list(packages_overview))))
+list_of_items = get_file_list(packages_overview)
+for item in list_of_items:
+    filename = get_filename(item)
+    file_path = "package_downloads/" + package_name + "/" + filename
+    if len(filename) > 0:
+        content_url = get_content_url(item)
+        print(f"writing {file_path}")
+        print(f"content from {content_url}")
+        write_file(file_path, content_url)
