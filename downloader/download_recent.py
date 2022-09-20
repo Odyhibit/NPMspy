@@ -1,7 +1,6 @@
 #  Josh Bloom
 # using Command line version of OSS-Gadget and yara.
-
-
+import os
 import sqlite3
 import subprocess
 
@@ -41,7 +40,7 @@ def rule_id(rule_name: str, connection: sqlite3.connect) -> int:
 def download_package(name: str) -> ():
     directory = ""
     package_name = "pkg:npm/" + scope_url(name)
-    package_dir = "package_downloads\\" + name
+    package_dir = "package_downloads/" + name
     # oss-download -e -c -x <package_dir> <package_name>
     oss_download = subprocess.run(["oss-download", "-e", "-c", "-x", package_dir, package_name], capture_output=True,
                                   encoding="UTF-8")
@@ -52,12 +51,15 @@ def download_package(name: str) -> ():
     return directory
 
 
-def yara_rule(directory: str) -> str:
+def yara_rule(name: str) -> (str, str):
     #  yara64 -r ./yara_rules/rules.yara ./package_downloads/<package_folder>
     # print("yara64", "-r", "yara_rules/rules.yara", start_from)
-    yara_response = subprocess.run(["yara64", "-r", "./yara_rules/rules.yara", directory], capture_output=True,
+    yara = "yara"
+    if os.name == "nt":
+        yara = "yara64"
+    yara_response = subprocess.run([yara, "-r", "./yara_rules/rules.yara", "package_downloads/" + name], capture_output=True,
                                    encoding="UTF-8")
-    return yara_response.stdout
+    return yara_response.stdout, yara_response.stderr
 
 
 def add_result(cursor: sqlite3.Connection.cursor, package_id: int, yara_id: int):
@@ -81,11 +83,13 @@ if __name__ == "__main__":
         download_dir = download_package(name)
 
         if len(download_dir) > 4:  # download worked
-            yara_matches = yara_rule(download_dir)
+            yara_matches, yara_error = yara_rule(name)
             gutter = " " * (75 - len(download_dir))
             if yara_matches == "":
                 add_result(cur_npm, package_id, no_matches)
                 print(download_dir, gutter, in_green("no matches"))
+                if yara_error:
+                    print(yara_error)
             else:
                 yara_match_id = rule_id(yara_matches.split()[0], conn_npm)
                 add_result(cur_npm, package_id, yara_match_id)
