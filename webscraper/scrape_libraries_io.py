@@ -67,7 +67,7 @@ def insert_new(response: str, connection: sqlite3.Connection):
     connection.commit()
 
 
-apikey = open("../apikey", 'r').read().strip()
+apikey = open("apikey", 'r').read().strip()
 done = False
 con_db = sqlite3.connect('npm_packages.db')  # TABLE packages  ->  date text, name text,  version real
 
