@@ -36,9 +36,8 @@ def write_file(name: str, url: str):
         file_out.write(content.content.decode("utf-8"))
 
 
-if __name__ == "__main__":
-
-    package_name = str(sys.argv[1])
+def download_package(name: str):
+    package_name = str(name)
     print()
     print(f"Looking up {package_name} on socket.dev this may take a minute . . .")
     print()
@@ -60,3 +59,8 @@ if __name__ == "__main__":
             content_url = get_content_url(item)
             print(f"writing {file_path}")
             write_file(file_path, content_url)
+
+
+if __name__ == "__main__":
+    download_package(sys.argv[1])
+
