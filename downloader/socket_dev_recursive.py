@@ -20,7 +20,7 @@ def get_previous_version(selections: BeautifulSoup.find_all) -> str:
 
 def has_raw_button(page_soup: BeautifulSoup) -> bool:
     raw_button = page_soup.find_all('a', class_="chakra-button css-zi9wpa")
-    print("looking for raw button", raw_button, len(raw_button))
+    # print("looking for raw button", raw_button, len(raw_button))
     return len(raw_button) > 0
 
 
@@ -47,7 +47,7 @@ def process_folders_files(page_soup: BeautifulSoup, url: str):
             print(url + get_filename_from_url(link['href']))
             this_url = url + get_filename_from_url(link['href'])
             new_soup = get_new_soup(this_url)
-            print(new_soup.find('a', class_="chakra-button css-zi9wpa"))
+            print("content", new_soup.find('a', class_="chakra-button css-zi9wpa"))
             process_folders_files(new_soup, this_url)
 
 
@@ -62,7 +62,7 @@ def write_file(filename: str, content_url: str):
     with open("package_downloads/" + filename, "wb") as file_out:
         content = requests.get(content_url)
         file_out.write(content.content)
-        print("writing file", "package_downloads/" + filename, "wb")
+
 
 
 package_name = "oaut"
