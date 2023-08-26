@@ -12,10 +12,10 @@ webscraper/scrape_libraries_io.py
 
 ### Downloading/Sanning packages
 downloader/download_recent.py 
-  * get the most recent unscanned packages from database
-  * use oss-download to save the package
-  * use yara to scan the package
-  * save results in database
+  * gets the most recent unscanned packages from database
+  * uses oss-download to save the package
+  * uses yara to scan the package
+  * saves results in database
 
 ### Database layout
 
